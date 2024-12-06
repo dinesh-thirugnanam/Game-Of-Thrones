@@ -1,0 +1,53 @@
+@import url('https://fonts.cdnfonts.com/css/love-light?styles=170414');
+@import url('https://db.onlinewebfonts.com/c/97c4b25dc74e0ab045154e75a8fdd69d?family=Game+of+Thrones');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+    .animate-text{
+        animation: text-reveal 5s steps(40,end) infinite;
+    }
+
+    @keyframes text-reveal {
+        0% {
+            width: 0;
+        }
+        100% {
+            width: 100%;
+        }
+    }
+    .translate-body{
+        animation: movebody 2s ease;
+    }
+
+    @keyframes movebody {
+        0% {
+            translate:0 100%;
+            opacity: 0;
+            scale: 120%;
+        }
+        100% {
+            translate: 0 0;
+            opacity: 100%;
+            scale: 100%;
+        }
+    }
+
+
+    .animate-blink {
+        animation: blink 500ms linear infinite;
+    }
+    @keyframes blink {
+        0%, 50% {
+            opacity: 0;
+        }
+        51%,100% {
+            opacity: 100%;
+        }
+    }
+
+
+
+}
