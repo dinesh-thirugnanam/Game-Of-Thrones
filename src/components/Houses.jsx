@@ -1,7 +1,9 @@
 import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Houses = () => {
     const [isMuted, setIsMuted] = useState(false); // Define the mute state
+    const navigate = useNavigate();
 
     const audioRefs = {
         stark: useRef(
@@ -66,10 +68,10 @@ const Houses = () => {
     };
 
     return (
-        <div className="bg-pink-400 h-screen w-screen relative translate-body opacity-100 transition-opacity duration-1000">
+        <div className="bg-pink-400 w-full h-screen overflow-hidden relative translate-body opacity-100 transition-opacity duration-1000">
             <img
                 src="https://images.pexels.com/photos/235985/pexels-photo-235985.jpeg"
-                className="absolute z-40"
+                className="absolute"
                 alt="Winter Background"
             />
             <div className="relative text-center">
@@ -84,6 +86,7 @@ const Houses = () => {
                         className="hover:scale-125 pb-2 group transition-all duration-200 h-[60vh] bg-black/20 rounded-b-2xl shadow-2xl shadow-black flex flex-col items-center"
                         onMouseEnter={() => handleHoverStart("stark")}
                         onMouseLeave={() => handleHoverEnd("stark")}
+                        onClick={() => navigate("/stark")}
                     >
                         <img
                             className="h-[100%] group-hover:h-[80%] object-contain transition-all duration-1000"
@@ -100,6 +103,7 @@ const Houses = () => {
                         className="hover:scale-125 pb-2 group transition-all duration-200 h-[60vh] bg-black/20 rounded-b-2xl shadow-2xl shadow-black flex flex-col items-center"
                         onMouseEnter={() => handleHoverStart("targaryen")}
                         onMouseLeave={() => handleHoverEnd("targaryen")}
+                        onClick={() => navigate("/targaryen")}
                     >
                         <img
                             className="h-[100%] group-hover:h-[80%] object-contain transition-all duration-1000"
@@ -116,6 +120,7 @@ const Houses = () => {
                         className="hover:scale-125 pb-2 group transition-all duration-200 h-[60vh] bg-black/20 rounded-b-2xl shadow-2xl shadow-black flex flex-col items-center"
                         onMouseEnter={() => handleHoverStart("lannister")}
                         onMouseLeave={() => handleHoverEnd("lannister")}
+                        onClick={() => navigate("/lannister")}
                     >
                         <img
                             className="h-[100%] group-hover:h-[80%] object-contain transition-all duration-1000"

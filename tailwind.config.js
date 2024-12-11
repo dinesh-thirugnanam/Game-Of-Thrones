@@ -8,7 +8,8 @@ export default {
     extend: {
       fontFamily: {
         lovelight : ['"Love Light"',"sans-serif"],
-        got : ["'Game of Thrones'", "sans-serif"]
+        got : ["'Game of Thrones'", "sans-serif"],
+        grym : ["'Grymmoire'", "sans-serif"]
       },
     },
   },

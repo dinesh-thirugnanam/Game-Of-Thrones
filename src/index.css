@@ -1,5 +1,7 @@
 @import url('https://fonts.cdnfonts.com/css/love-light?styles=170414');
 @import url('https://db.onlinewebfonts.com/c/97c4b25dc74e0ab045154e75a8fdd69d?family=Game+of+Thrones');
+@import url('https://fonts.cdnfonts.com/css/grymmoire');
+
 
 @tailwind base;
 @tailwind components;
@@ -47,6 +49,22 @@
             opacity: 100%;
         }
     }
+
+    @keyframes fadeIn {
+        0% {
+          opacity: 0;
+          transform: translateY(30%);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0%);
+        }
+      }
+      
+      /* Apply the fade-in animation */
+      .animate-fadeIn {
+        animation: fadeIn 1s ease-out forwards; /* Apply the fadeIn animation */
+      }
 
 
 
