@@ -1,8 +1,7 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Houses = () => {
-    const [isMuted, setIsMuted] = useState(false); // Define the mute state
+const Houses = ({ isMuted }) => {
     const navigate = useNavigate();
 
     const audioRefs = {
@@ -17,120 +16,97 @@ const Houses = () => {
         ),
     };
 
-    const toggleMute = () => {
-        setIsMuted((prev) => {
-            // Update mute state for all audios
-            Object.values(audioRefs).forEach((ref) => {
-                ref.current.muted = !prev;
-            });
-            return !prev;
-        });
-    };
+    const currentAudio = useRef(null);
 
     const fadeAudio = (audio, type) => {
         if (!audio) return;
 
-        let volume = type === "in" ? 0 : 1; // Start at 0 for fade-in or 1 for fade-out
-        const step = 0.05; // Adjust the volume step for smooth fading
+        let volume = type === "in" ? 0 : audio.volume || 1;
+        const step = 0.05;
         const interval = setInterval(() => {
             if (type === "in" && volume < 1) {
-                volume += step;
-                audio.volume = Math.min(volume, 1); // Ensure volume doesn't exceed 1
+                volume = Math.min(volume + step, 1);
+                audio.volume = volume;
             } else if (type === "out" && volume > 0) {
-                volume -= step;
-                audio.volume = Math.max(volume, 0); // Ensure volume doesn't drop below 0
+                volume = Math.max(volume - step, 0);
+                audio.volume = volume;
             } else {
                 clearInterval(interval);
-                if (type === "out") audio.pause(); // Stop the audio on fade-out
+                if (type === "out") audio.pause();
             }
-        }, 50); // Interval duration for fading effect
+        }, 50);
     };
 
     const handleHoverStart = (house) => {
-        if (isMuted) return; // Do nothing if muted
-        const audio = audioRefs[house]?.current;
-        if (audio) {
-            audio.currentTime = 0; // Restart the audio
-            audio
-                .play()
-                .catch((err) =>
-                    console.error(`Failed to play ${house} audio`, err)
-                );
-            fadeAudio(audio, "in");
+        if (isMuted) return;
+
+        const newAudio = audioRefs[house]?.current;
+
+        if (currentAudio.current && currentAudio.current !== newAudio) {
+            fadeAudio(currentAudio.current, "out"); // Fade out current audio
+        }
+
+        if (newAudio && currentAudio.current !== newAudio) {
+            // newAudio.currentTime = 0; // Restart the audio
+            newAudio.play().catch((err) => console.error(`Play error: ${err}`));
+            fadeAudio(newAudio, "in");
+            currentAudio.current = newAudio;
         }
     };
 
     const handleHoverEnd = (house) => {
         const audio = audioRefs[house]?.current;
-        if (audio) {
+        if (audio && currentAudio.current === audio) {
             fadeAudio(audio, "out");
+            currentAudio.current = null;
         }
     };
 
     return (
-        <div className="bg-pink-400 w-full h-screen overflow-hidden relative translate-body opacity-100 transition-opacity duration-1000">
+        <div className="bg-[#53310b] w-screen h-screen overflow-hidden relative animate-body opacity-100 transition-all duration-1000">
             <img
                 src="https://images.pexels.com/photos/235985/pexels-photo-235985.jpeg"
-                className="absolute"
+                className="absolute w-full max-sm:h-screen"
                 alt="Winter Background"
             />
             <div className="relative text-center">
                 <div className="w-fit h-fit py-3 mx-auto overflow-hidden animate-text text-nowrap">
-                    <p className="text-7xl pt-5 font-black font-lovelight tracking-wider">
+                    <p className="text-[10vh] pt-5 font-black font-lovelight tracking-wider">
                         Winter is Coming...
                     </p>
                 </div>
-                <div className="flex w-full justify-around px-10 mt-10 font-got">
-                    {/* House Stark Button */}
-                    <button
-                        className="hover:scale-125 pb-2 group transition-all duration-200 h-[60vh] bg-black/20 rounded-b-2xl shadow-2xl shadow-black flex flex-col items-center"
-                        onMouseEnter={() => handleHoverStart("stark")}
-                        onMouseLeave={() => handleHoverEnd("stark")}
-                        onClick={() => navigate("/stark")}
-                    >
-                        <img
-                            className="h-[100%] group-hover:h-[80%] object-contain transition-all duration-1000"
-                            src="/images/House-Stark-Main-Shield.png"
-                            alt="House Stark Shield"
-                        />
-                        <div className="group-hover:opacity-100 group-hover:mt-2 -mt-2 opacity-0 duration-1000 delay-200 transition-all text-wrap w-40">
-                            "WINTER IS COMING"
-                        </div>
-                    </button>
-
-                    {/* House Targaryen Button */}
-                    <button
-                        className="hover:scale-125 pb-2 group transition-all duration-200 h-[60vh] bg-black/20 rounded-b-2xl shadow-2xl shadow-black flex flex-col items-center"
-                        onMouseEnter={() => handleHoverStart("targaryen")}
-                        onMouseLeave={() => handleHoverEnd("targaryen")}
-                        onClick={() => navigate("/targaryen")}
-                    >
-                        <img
-                            className="h-[100%] group-hover:h-[80%] object-contain transition-all duration-1000"
-                            src="/images/House-Targaryen-Main-Shield.png"
-                            alt="House Targaryen Shield"
-                        />
-                        <div className="group-hover:opacity-100 group-hover:mt-2 -mt-2 opacity-0 duration-1000 delay-200 transition-all text-wrap w-40">
-                            "BLOOD OF MY BLOOD"
-                        </div>
-                    </button>
-
-                    {/* House Lannister Button */}
-                    <button
-                        className="hover:scale-125 pb-2 group transition-all duration-200 h-[60vh] bg-black/20 rounded-b-2xl shadow-2xl shadow-black flex flex-col items-center"
-                        onMouseEnter={() => handleHoverStart("lannister")}
-                        onMouseLeave={() => handleHoverEnd("lannister")}
-                        onClick={() => navigate("/lannister")}
-                    >
-                        <img
-                            className="h-[100%] group-hover:h-[80%] object-contain transition-all duration-1000"
-                            src="/images/House-Lannister-Main-Shield.png"
-                            alt="House Lannister Shield"
-                        />
-                        <div className="group-hover:opacity-100 group-hover:mt-2 -mt-2 opacity-0 duration-1000 delay-200 transition-all text-wrap w-40">
-                            "A LANNISTER ALWAYS PAYS HIS DEBTS"
-                        </div>
-                    </button>
+                <div className="sm:flex w-full justify-around px-10 mt-10 font-got">
+                    {["stark", "targaryen", "lannister"].map((house) => (
+                        <button
+                            key={house}
+                            className="hover:scale-125 pb-2 group transition-all duration-200 h-[60vh] bg-black/20 rounded-b-2xl shadow-2xl shadow-black flex flex-col items-center"
+                            onMouseEnter={() => handleHoverStart(house)}
+                            onMouseLeave={() => handleHoverEnd(house)}
+                            onClick={() => {
+                                handleHoverEnd(house);
+                                navigate(`/${house}`);
+                            }}
+                        >
+                            <img
+                                className="h-[100%] group-hover:h-[80%] object-contain transition-all duration-1000"
+                                src={`/images/House-${
+                                    house.charAt(0).toUpperCase() +
+                                    house.slice(1)
+                                }-Main-Shield.png`}
+                                alt={`House ${
+                                    house.charAt(0).toUpperCase() +
+                                    house.slice(1)
+                                } Shield`}
+                            />
+                            <div className="group-hover:opacity-100 group-hover:mt-2 -mt-2 opacity-0 duration-1000 delay-200 transition-all text-wrap w-40">
+                                {house === "stark"
+                                    ? "WINTER IS COMING"
+                                    : house === "targaryen"
+                                    ? "BLOOD OF MY BLOOD"
+                                    : "A LANNISTER ALWAYS PAYS HIS DEBTS"}
+                            </div>
+                        </button>
+                    ))}
                 </div>
             </div>
         </div>

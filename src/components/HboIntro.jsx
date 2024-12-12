@@ -1,10 +1,10 @@
 import React, { useRef, useState } from "react";
 
 const HboIntro = () => {
-    const hbo = useRef(null);
     const [hboPlay, setHboPlay] = useState(false);
-    const [isVideoVisible, setIsVideoVisible] = useState(true);
-    const [isMuted, setIsMuted] = useState(true); // Controls the mute state
+    const [isMuted, setIsMuted] = useState(false);
+    const [isVideoVisible, setIsVideoVisible] = useState(false);
+    const [videoEnd, setVideoEnd] = useState(false); // Flag to track if the video has ended
 
     const audioRefs = {
         stark: useRef(
@@ -18,40 +18,30 @@ const HboIntro = () => {
         ),
     };
 
-    const toggleMute = () => {
-        setIsMuted((prev) => {
-            // Update mute state for all audios
-            Object.values(audioRefs).forEach((ref) => {
-                ref.current.muted = !prev;
-            });
-            return !prev;
-        });
-    };
-
     const fadeAudio = (audio, type) => {
         if (!audio) return;
 
-        let volume = type === "in" ? 0 : 1; // Start at 0 for fade-in or 1 for fade-out
-        const step = 0.05; // Adjust the volume step for smooth fading
+        let volume = type === "in" ? 0 : 1;
+        const step = 0.05;
         const interval = setInterval(() => {
             if (type === "in" && volume < 1) {
                 volume += step;
-                audio.volume = Math.min(volume, 1); // Ensure volume doesn't exceed 1
+                audio.volume = Math.min(volume, 1);
             } else if (type === "out" && volume > 0) {
                 volume -= step;
-                audio.volume = Math.max(volume, 0); // Ensure volume doesn't drop below 0
+                audio.volume = Math.max(volume, 0);
             } else {
                 clearInterval(interval);
-                if (type === "out") audio.pause(); // Stop the audio on fade-out
+                if (type === "out") audio.pause();
             }
-        }, 50); // Interval duration for fading effect
+        }, 50);
     };
 
     const handleHoverStart = (house) => {
-        if (isMuted) return; // Do nothing if muted
+        if (isMuted) return;
         const audio = audioRefs[house]?.current;
         if (audio) {
-            audio.currentTime = 0; // Restart the audio
+            audio.currentTime = 0;
             audio
                 .play()
                 .catch((err) =>
@@ -68,6 +58,29 @@ const HboIntro = () => {
         }
     };
 
+    const hbo = useRef(null);
+
+    const toggleMute = () => {
+        setIsMuted((prev) => {
+            const newMutedState = !prev;
+            Object.values(audioRefs).forEach((ref) => {
+                ref.current.muted = newMutedState;
+            });
+            return newMutedState;
+        });
+    };
+
+    const startSequence = () => {
+        setIsVideoVisible(true);
+        setTimeout(() => {
+            hbo.current.play();
+        }, 500);
+    };
+
+    const handleVideoEnd = () => {
+        setVideoEnd(true); // Set videoEnd to true when the video finishes
+    };
+
     return (
         <div className="relative w-screen h-screen">
             {/* Mute/Unmute Button */}
@@ -80,21 +93,49 @@ const HboIntro = () => {
                 {isMuted ? "Unmute" : "Mute"}
             </button>
 
-            {isVideoVisible && (
-                <video
-                    ref={hbo}
-                    src="/clips/hbo intro hd1080p.mp4"
-                    className={`w-full h-full transition-all duration-1000 ease-in-out ${
-                        hboPlay
-                            ? "scale-150 opacity-0"
-                            : "scale-100 opacity-100"
-                    }`}
-                    autoPlay
-                    muted
-                    onEnded={() => setIsVideoVisible(false)}
-                />
-            )}
-            {!isVideoVisible && (
+            <div
+                className={`relative w-screen h-screen overflow-y-auto scroll-smooth`}
+            >
+                <div
+                    className={`bg-white/20 z-10 size-fit transition-opacity duration-1000 ${
+                        isVideoVisible ? "opacity-0" : "opacity-100"
+                    } ${videoEnd ? "invisible" : "visible"}`}
+                >
+                    <img
+                        src="\images\got-throne.jpg"
+                        className="w-screen h-screen z-20 object-cover"
+                        draggable="false"
+                    />
+                    <button
+                        className="z-30 absolute bg-white/40 py-4 px-6 rounded-2xl text-xl hover:scale-110 hover:bg-white/60 active:bg-white/70 transition-all font-got bottom-1/3 right-1/2"
+                        onClick={startSequence}
+                    >
+                        Join Us on this Journey
+                    </button>
+                </div>
+
+                {isVideoVisible && !videoEnd && (
+                    <video
+                        id="video"
+                        src="\clips\hbo intro hd1080p.mp4"
+                        ref={hbo}
+                        muted={isMuted}
+                        className="absolute top-0 left-0 w-screen h-full object-cover transition-opacity duration-1000 opacity-0"
+                        onCanPlay={() => {
+                            setTimeout(() => {
+                                const videoElement =
+                                    document.getElementById("video");
+                                videoElement.classList.remove("opacity-0");
+                                videoElement.classList.add("opacity-100");
+                            }, 100);
+                        }}
+                        onEnded={handleVideoEnd} // Use the local handler to set videoEnd to true
+                    />
+                )}
+            </div>
+
+            {/* Content After Video Ends */}
+            {videoEnd && (
                 <div className="bg-pink-400 h-screen w-screen relative translate-body">
                     <img
                         src="https://images.pexels.com/photos/235985/pexels-photo-235985.jpeg"
@@ -108,6 +149,7 @@ const HboIntro = () => {
                             </p>
                         </div>
                         <div className="flex w-full justify-around px-10 mt-10 font-got">
+                            {/* House Stark Button */}
                             <button
                                 className="hover:scale-125 pb-2 group transition-all duration-200 h-[60vh] bg-black/20 rounded-b-2xl shadow-2xl shadow-black flex flex-col items-center"
                                 onMouseEnter={() => handleHoverStart("stark")}
@@ -122,6 +164,7 @@ const HboIntro = () => {
                                     "WINTER IS COMING"
                                 </div>
                             </button>
+                            {/* House Targaryen Button */}
                             <button
                                 className="hover:scale-125 pb-2 group transition-all duration-200 h-[60vh] bg-black/20 rounded-b-2xl shadow-2xl shadow-black flex flex-col items-center"
                                 onMouseEnter={() =>
@@ -138,6 +181,7 @@ const HboIntro = () => {
                                     "BLOOD OF MY BLOOD"
                                 </div>
                             </button>
+                            {/* House Lannister Button */}
                             <button
                                 className="hover:scale-125 pb-2 group transition-all duration-200 h-[60vh] bg-black/20 rounded-b-2xl shadow-2xl shadow-black flex flex-col items-center"
                                 onMouseEnter={() =>
