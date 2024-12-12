@@ -52,7 +52,7 @@ const CharacterCard = ({ img, name, desc }) => {
             />
             <div className="text-center w-[60vw] bg-white/80 mx-5 py-6 px-4 rounded-md shadow-lg shadow-black transition-all">
                 <p className="text-2xl py-4 font-semibold">{name}</p>
-                <p className="font-lovelight font-bold text-black/70 text-4xl">
+                <p className="font-royal font-bold text-black/70 text-4xl">
                     "{desc}"
                 </p>
             </div>
