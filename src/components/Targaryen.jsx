@@ -53,7 +53,7 @@ const Targaryen = () => {
             {/* Background image with dynamic positioning */}
             <img
                 src="/images/danybg.jpg"
-                className="absolute w-full  opacity-40"
+                className="absolute w-full  opacity-20"
                 style={{
                     top: `${-scrollY * 0.5 - 1200}px`, // Parallax effect
                     height: "auto",
