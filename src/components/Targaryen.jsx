@@ -60,10 +60,28 @@ const Targaryen = () => {
                 }}
                 alt="Targaryen Family Background"
             />
+            <div className="bg-[#4d1f0c] relative h-screen w-screen drop-shadow-md animate-exit overflow-hidden rounded-b-3xl">
+            <img 
+                src="/images/targayren.jpg" 
+                className="relative w-screen animate-banner object-cover" 
+                alt="Stark Banner" 
+                />
+            <div className="flex items-center py-2 justify-around">
+                <a href="/lannister"><button className="h-[17vh]">
+                    <img src="/images/House-Lannister-Main-Shield.png" className="object-contain h-full hover:scale-105 transition-all"/>
+                </button></a>
+                <a href="/"><button className="h-[17vh]">
+                    <img src="/images/gotintro.gif" className="object-cover h-full rounded-xl hover:scale-105 transition-all"/>
+                </button></a>
+                <a href="/stark"><button className="h-[17vh]">
+                    <img src="/images/House-Stark-Main-Shield.png" className="object-contain h-full hover:scale-105 transition-all"/>
+                </button></a>
+            </div>
+            </div>
             {/* Scrollable character cards */}
             <div
                 ref={scrollableRef}
-                className="absolute z-10 overflow-y-visible overflow-x-hidden h-full w-full scroll-smooth"
+                className="absolute pb-32 z-10 overflow-y-visible overflow-x-hidden h-full w-full scroll-smooth no-scrollbar"
             >
                 {characters.map((character, index) => (
                     <CharacterCard
